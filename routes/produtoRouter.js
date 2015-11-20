@@ -1,12 +1,34 @@
 var express = require('express');
 var router = express.Router();
 var produtoController = require('../controllers/produtoController');
+var usuarioController  =require('../controllers/usuarioController');
 
 
-router.get('/',function(req, res){
-	produtoController.list(function(resp){
-		res.json(resp);
+function pegarToken(req, res, next){
+	var header = req.headers['authorization'];
+	
+	if(typeof header !== 'undefined'){
+		req.token = header;
+		next();
+	}else{
+		res.sendStatus(403);
+	}
+}
+
+router.get('/',pegarToken,function(req, res){
+	
+	var token = req.token;
+	usuarioController.authorize(token, function(resp){
+		if (resp === true){
+			produtoController.list(function(resp){
+				res.json(resp);
+			});
+		}else{
+			res.sendStatus(403);
+		}
 	})
+	
+	
 });
 
 router.post('/cadastrar', function(req, res){

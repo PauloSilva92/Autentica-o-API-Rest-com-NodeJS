@@ -17,7 +17,7 @@ exports.save = function(nome, senha, callback){
 				}else{
 					callback(usuario);
 				}
-			})
+			});
 		}
 	})
 }
@@ -49,5 +49,17 @@ exports.list = function(token, callback){
 		}else{
 			callback('Usuario não encontrado');
 		}
-	})
+	});
+}
+
+exports.authorize = function(token, callback){
+	Usuario.findOne({'token':token}, function(erro, usuario){
+		if(erro){
+			callback(false);
+		}else if(usuario){
+			callback(true);
+		}else{
+			callback(false);
+		}
+	});
 }
